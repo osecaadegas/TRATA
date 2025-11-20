@@ -17,24 +17,135 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <style>
-      /* Smooth scroll for in-page navigation */
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Simple video container styling fallback */
-      .video-shadow {
-        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.7);
-      }
-    </style>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="bg-slate-950 text-slate-50 antialiased">
     <div id="root"></div>
 
     <script type="text/babel">
-      const { useState } = React;
+      // ============================================
+      // THEME SYSTEM
+      // ============================================
+      
+      const themes = {
+        modern: {
+          name: "Modern (Default)",
+          bg: "slate-950",
+          bgAlt: "slate-900",
+          text: "slate-50",
+          textAlt: "slate-300",
+          accent: "emerald-400",
+          accentDark: "emerald-500",
+          border: "slate-800",
+          gradient: "from-slate-950 via-slate-950 to-slate-900"
+        },
+        classic: {
+          name: "Classic Elegant",
+          bg: "stone-900",
+          bgAlt: "stone-800",
+          text: "amber-50",
+          textAlt: "stone-300",
+          accent: "amber-500",
+          accentDark: "amber-600",
+          border: "stone-700",
+          gradient: "from-stone-900 via-stone-900 to-stone-800"
+        },
+        cyberpunk: {
+          name: "Cyberpunk",
+          bg: "black",
+          bgAlt: "zinc-950",
+          text: "cyan-50",
+          textAlt: "cyan-200",
+          accent: "fuchsia-500",
+          accentDark: "fuchsia-600",
+          border: "fuchsia-900",
+          gradient: "from-black via-zinc-950 to-purple-950"
+        },
+        cozy: {
+          name: "Cozy Warm",
+          bg: "orange-950",
+          bgAlt: "orange-900",
+          text: "orange-50",
+          textAlt: "orange-200",
+          accent: "rose-400",
+          accentDark: "rose-500",
+          border: "orange-800",
+          gradient: "from-orange-950 via-red-950 to-orange-900"
+        },
+        lavish: {
+          name: "Lavish Luxury",
+          bg: "purple-950",
+          bgAlt: "purple-900",
+          text: "purple-50",
+          textAlt: "purple-200",
+          accent: "gold-400",
+          accentDark: "yellow-500",
+          border: "purple-800",
+          gradient: "from-purple-950 via-indigo-950 to-purple-900"
+        },
+        urban: {
+          name: "Urban Dark",
+          bg: "zinc-950",
+          bgAlt: "zinc-900",
+          text: "zinc-50",
+          textAlt: "zinc-300",
+          accent: "blue-400",
+          accentDark: "blue-500",
+          border: "zinc-800",
+          gradient: "from-zinc-950 via-zinc-950 to-zinc-900"
+        },
+        professional: {
+          name: "Professional Blue",
+          bg: "slate-900",
+          bgAlt: "slate-800",
+          text: "slate-50",
+          textAlt: "slate-200",
+          accent: "sky-500",
+          accentDark: "sky-600",
+          border: "slate-700",
+          gradient: "from-slate-900 via-blue-950 to-slate-900"
+        },
+        forest: {
+          name: "Forest Green",
+          bg: "green-950",
+          bgAlt: "green-900",
+          text: "green-50",
+          textAlt: "green-200",
+          accent: "lime-400",
+          accentDark: "lime-500",
+          border: "green-800",
+          gradient: "from-green-950 via-emerald-950 to-green-900"
+        },
+        sunset: {
+          name: "Sunset Vibes",
+          bg: "pink-950",
+          bgAlt: "pink-900",
+          text: "pink-50",
+          textAlt: "pink-200",
+          accent: "orange-400",
+          accentDark: "orange-500",
+          border: "pink-800",
+          gradient: "from-pink-950 via-orange-950 to-pink-900"
+        },
+        midnight: {
+          name: "Midnight Blue",
+          bg: "blue-950",
+          bgAlt: "blue-900",
+          text: "blue-50",
+          textAlt: "blue-200",
+          accent: "cyan-400",
+          accentDark: "cyan-500",
+          border: "blue-800",
+          gradient: "from-blue-950 via-indigo-950 to-blue-900"
+        }
+      };
 
+      // ============================================
+      // DATA & UTILITIES (from data.js)
+      // ============================================
+      
+      // Section IDs
       const sections = {
         hero: "hero",
         comoFunciona: "como-funciona",
@@ -43,6 +154,7 @@
         contacto: "contacto",
       };
 
+      // Before/After Gallery Data
       const beforeAfterData = [
         {
           id: 1,
@@ -76,6 +188,7 @@
         },
       ];
 
+      // Utility function for smooth scrolling
       function scrollToSection(id) {
         const el = document.getElementById(id);
         if (el) {
@@ -83,46 +196,104 @@
         }
       }
 
-      function Navbar() {
+      // ============================================
+      // COMPONENTS (from components.js)
+      // ============================================
+      
+      const { useState } = React;
+
+      // Theme Selector Component
+      function ThemeSelector({ currentTheme, onThemeChange }) {
+        const [isOpen, setIsOpen] = useState(false);
+
         return (
-          <header className="fixed inset-x-0 top-0 z-30 border-b border-slate-800/60 bg-slate-950/70 backdrop-blur-xl">
+          <div className="fixed bottom-6 right-6 z-50">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`flex h-14 w-14 items-center justify-center rounded-full bg-${themes[currentTheme].accent} text-${themes[currentTheme].bg} shadow-2xl transition hover:scale-110`}
+              title="Change Theme"
+            >
+              <span className="text-2xl">🎨</span>
+            </button>
+
+            {isOpen && (
+              <div className={`absolute bottom-20 right-0 w-64 rounded-2xl border border-${themes[currentTheme].border} bg-${themes[currentTheme].bg}/95 p-4 shadow-2xl backdrop-blur-xl`}>
+                <h3 className={`mb-3 text-sm font-semibold text-${themes[currentTheme].text}`}>
+                  Choose Theme
+                </h3>
+                <div className="grid gap-2">
+                  {Object.entries(themes).map(([key, theme]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        onThemeChange(key);
+                        setIsOpen(false);
+                      }}
+                      className={`rounded-lg border p-3 text-left text-xs transition ${
+                        currentTheme === key
+                          ? `border-${theme.accent} bg-${theme.accent}/10`
+                          : `border-${themes[currentTheme].border}/50 hover:border-${theme.accent}/50`
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`font-medium text-${themes[currentTheme].text}`}>
+                          {theme.name}
+                        </span>
+                        <div className="flex gap-1">
+                          <div className={`h-4 w-4 rounded-full bg-${theme.bg} border border-${theme.border}`} />
+                          <div className={`h-4 w-4 rounded-full bg-${theme.accent}`} />
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // Navbar Component
+      function Navbar({ theme }) {
+        return (
+          <header className={`fixed inset-x-0 top-0 z-30 border-b border-${theme.border}/60 bg-${theme.bg}/70 backdrop-blur-xl`}>
             <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 lg:px-0">
               <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-lg font-black tracking-tight text-slate-950 shadow-lg shadow-emerald-500/40">
+                <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-${theme.accent} text-lg font-black tracking-tight text-${theme.bg} shadow-lg shadow-${theme.accent}/40`}>
                   T
                 </div>
                 <div>
-                  <div className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-400">
+                  <div className={`text-sm font-semibold uppercase tracking-[0.22em] text-${theme.accent}`}>
                     TRATA
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className={`text-[11px] text-${theme.textAlt}`}>
                     Trata, tratamos de tudo.
                   </p>
                 </div>
               </div>
 
-              <div className="hidden items-center gap-6 text-sm font-medium text-slate-200 md:flex">
+              <div className={`hidden items-center gap-6 text-sm font-medium text-${theme.text} md:flex`}>
                 <button
                   onClick={() => scrollToSection(sections.comoFunciona)}
-                  className="hover:text-emerald-400"
+                  className={`hover:text-${theme.accent}`}
                 >
                   Como funciona
                 </button>
                 <button
                   onClick={() => scrollToSection(sections.galeria)}
-                  className="hover:text-emerald-400"
+                  className={`hover:text-${theme.accent}`}
                 >
                   Antes / Depois
                 </button>
                 <button
                   onClick={() => scrollToSection(sections.oferta)}
-                  className="hover:text-emerald-400"
+                  className={`hover:text-${theme.accent}`}
                 >
                   Mini carro oferta
                 </button>
                 <button
                   onClick={() => scrollToSection(sections.contacto)}
-                  className="rounded-full border border-emerald-400/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-400 transition hover:border-emerald-300 hover:bg-emerald-400 hover:text-slate-950"
+                  className={`rounded-full border border-${theme.accent}/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-${theme.accent} transition hover:border-${theme.accent} hover:bg-${theme.accent} hover:text-${theme.bg}`}
                 >
                   Falar com a TRATA
                 </button>
@@ -130,7 +301,7 @@
 
               <button
                 onClick={() => scrollToSection(sections.contacto)}
-                className="inline-flex items-center gap-1 rounded-full border border-emerald-400/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-400 transition hover:border-emerald-300 hover:bg-emerald-400 hover:text-slate-950 md:hidden"
+                className={`inline-flex items-center gap-1 rounded-full border border-${theme.accent}/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-${theme.accent} transition hover:border-${theme.accent} hover:bg-${theme.accent} hover:text-${theme.bg} md:hidden`}
               >
                 Contacto
               </button>
@@ -139,33 +310,34 @@
         );
       }
 
-      function Hero() {
+      // Hero Component
+      function Hero({ theme }) {
         return (
           <section
             id={sections.hero}
-            className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 pt-20"
+            className={`relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b ${theme.gradient} pt-20`}
           >
             <div className="pointer-events-none absolute inset-0 opacity-40 mix-blend-screen">
               <div className="mx-auto flex h-full max-w-5xl items-center justify-center">
-                <div className="h-72 w-72 rounded-full bg-emerald-500/40 blur-3xl" />
-                <div className="h-72 w-72 rounded-full bg-cyan-500/30 blur-3xl" />
+                <div className={`h-72 w-72 rounded-full bg-${theme.accent}/40 blur-3xl`} />
+                <div className={`h-72 w-72 rounded-full bg-${theme.accentDark}/30 blur-3xl`} />
               </div>
             </div>
 
             <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-4 pb-16 pt-6 lg:flex-row lg:gap-16 lg:px-0">
               <div className="flex-1 space-y-6 text-center lg:text-left">
-                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                <span className={`inline-flex items-center gap-2 rounded-full border border-${theme.accent}/30 bg-${theme.accent}/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-${theme.accent}`}>
                   Renovação inteligente · Paga só quando vender
                 </span>
 
                 <div className="space-y-4">
-                  <h1 className="text-balance text-4xl font-semibold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
+                  <h1 className={`text-balance text-4xl font-semibold tracking-tight text-${theme.text} sm:text-5xl lg:text-6xl`}>
                     TRATA
-                    <span className="block text-2xl font-normal text-slate-300 sm:text-3xl lg:text-4xl">
+                    <span className={`block text-2xl font-normal text-${theme.textAlt} sm:text-3xl lg:text-4xl`}>
                       "Trata, tratamos de tudo."
                     </span>
                   </h1>
-                  <p className="max-w-xl text-balance text-sm text-slate-300 sm:text-base">
+                  <p className={`max-w-xl text-balance text-sm text-${theme.textAlt} sm:text-base`}>
                     Tem uma casa antiga? A TRATA renova, valoriza, acompanha a venda e só depois
                     você paga a renovação e a nossa taxa sobre o negócio fechado. Simples,
                     transparente e sem dores de cabeça.
@@ -175,34 +347,34 @@
                 <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <button
                     onClick={() => scrollToSection(sections.comoFunciona)}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-400 px-7 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition hover:bg-emerald-300"
+                    className={`inline-flex items-center justify-center gap-2 rounded-full bg-${theme.accent} px-7 py-2.5 text-sm font-semibold text-${theme.bg} shadow-lg shadow-${theme.accent}/40 transition hover:bg-${theme.accentDark}`}
                   >
                     Ver como funciona
                     <span className="text-base">→</span>
                   </button>
                   <button
                     onClick={() => scrollToSection(sections.galeria)}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/60 px-7 py-2.5 text-sm font-medium text-slate-100 transition hover:border-slate-500 hover:bg-slate-900"
+                    className={`inline-flex items-center justify-center gap-2 rounded-full border border-${theme.border}/80 bg-${theme.bgAlt}/60 px-7 py-2.5 text-sm font-medium text-${theme.text} transition hover:border-${theme.border} hover:bg-${theme.bgAlt}`}
                   >
                     Ver antes / depois
                   </button>
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                <div className={`mt-4 flex flex-wrap items-center gap-4 text-xs text-${theme.textAlt}`}>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                    <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full bg-${theme.accent}/20 text-${theme.accent}`}>
                       ✓
                     </span>
                     Sem entrada para a obra
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                    <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full bg-${theme.accent}/20 text-${theme.accent}`}>
                       ✓
                     </span>
                     Pagamento só após a venda
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
+                    <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full bg-${theme.accent}/20 text-${theme.accent}`}>
                       ✓
                     </span>
                     Mini carro oferta em vendas selecionadas
@@ -211,8 +383,8 @@
               </div>
 
               <div className="flex-1">
-                <div className="video-shadow relative mx-auto aspect-video max-w-xl overflow-hidden rounded-3xl border border-slate-700/70 bg-slate-900/80">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+                <div className={`video-shadow relative mx-auto aspect-video max-w-xl overflow-hidden rounded-3xl border border-${theme.border}/70 bg-${theme.bgAlt}/80`}>
+                  <div className={`absolute inset-0 bg-gradient-to-t from-${theme.bg}/80 via-${theme.bg}/10 to-transparent`} />
                   <video
                     className="h-full w-full object-cover"
                     src="https://videos.pexels.com/video-files/5583115/5583115-uhd_2560_1440_25fps.mp4"
@@ -223,21 +395,21 @@
                   ></video>
 
                   <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5">
-                    <div className="flex items-center justify-between text-[11px] text-slate-300">
-                      <span className="rounded-full bg-slate-950/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-300">
+                    <div className={`flex items-center justify-between text-[11px] text-${theme.textAlt}`}>
+                      <span className={`rounded-full bg-${theme.bg}/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-${theme.accent}`}>
                         Apresentação TRATA
                       </span>
-                      <span className="rounded-full bg-slate-950/70 px-2 py-1 text-[10px] text-slate-300">
+                      <span className={`rounded-full bg-${theme.bg}/70 px-2 py-1 text-[10px] text-${theme.textAlt}`}>
                         Renovação · Venda · Resultado
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <p className="inline-flex items-center gap-1 rounded-full bg-slate-950/70 px-2 py-1 text-[10px] font-medium text-slate-200">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      <p className={`inline-flex items-center gap-1 rounded-full bg-${theme.bg}/70 px-2 py-1 text-[10px] font-medium text-${theme.text}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full bg-${theme.accent}`} />
                         Seu imóvel, versão premium.
                       </p>
-                      <p className="max-w-xs rounded-xl bg-slate-950/80 px-3 py-2 text-[11px] text-slate-100">
+                      <p className={`max-w-xs rounded-xl bg-${theme.bg}/80 px-3 py-2 text-[11px] text-${theme.text}`}>
                         Veja como transformamos casas antigas em oportunidades de venda
                         com mais valor, sem custo inicial para você.
                       </p>
@@ -245,7 +417,7 @@
                   </div>
                 </div>
 
-                <p className="mt-3 text-center text-[11px] text-slate-500">
+                <p className={`mt-3 text-center text-[11px] text-${theme.textAlt}`}>
                   Vídeo ilustrativo. A sua experiência com a TRATA é feita à medida do seu
                   imóvel e dos seus objetivos.
                 </p>
@@ -255,45 +427,47 @@
         );
       }
 
-      function Step({ number, title, description }) {
+      // Step Component
+      function Step({ number, title, description, theme }) {
         return (
-          <div className="relative flex gap-4 rounded-2xl border border-slate-800/70 bg-slate-900/70 p-4 sm:p-5">
-            <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-emerald-400 text-sm font-bold text-slate-950 shadow-md shadow-emerald-500/40">
+          <div className={`relative flex gap-4 rounded-2xl border border-${theme.border}/70 bg-${theme.bgAlt}/70 p-4 sm:p-5`}>
+            <div className={`mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-${theme.accent} text-sm font-bold text-${theme.bg} shadow-md shadow-${theme.accent}/40`}>
               {number}
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-50 sm:text-base">
+              <h3 className={`text-sm font-semibold text-${theme.text} sm:text-base`}>
                 {title}
               </h3>
-              <p className="mt-1 text-xs text-slate-300 sm:text-sm">{description}</p>
+              <p className={`mt-1 text-xs text-${theme.textAlt} sm:text-sm`}>{description}</p>
             </div>
           </div>
         );
       }
 
-      function ComoFunciona() {
+      // ComoFunciona Component
+      function ComoFunciona({ theme }) {
         return (
           <section
             id={sections.comoFunciona}
-            className="border-y border-slate-800/80 bg-slate-950/60"
+            className={`border-y border-${theme.border}/80 bg-${theme.bg}/60`}
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-14 lg:flex-row lg:items-center lg:gap-16 lg:px-0">
               <div className="flex-1 space-y-4">
                 <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
                   Como funciona
                 </h2>
-                <p className="text-balance text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+                <p className={`text-balance text-2xl font-semibold tracking-tight text-${theme.text} sm:text-3xl`}>
                   Você traz a casa antiga. A TRATA traz o projeto, a obra e o resultado.
                 </p>
-                <p className="max-w-xl text-sm text-slate-300 sm:text-base">
+                <p className={`max-w-xl text-sm text-${theme.textAlt} sm:text-base`}>
                   O nosso modelo é pensado para quem quer vender melhor sem avançar com o valor
                   total da obra. Alinhamos o nosso sucesso com o seu: só recebemos quando o seu
                   imóvel é vendido.
                 </p>
 
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 text-xs text-slate-200 sm:text-sm">
-                    <p className="font-semibold text-emerald-300">
+                  <div className={`rounded-2xl border border-${theme.accent}/30 bg-${theme.accent}/5 p-4 text-xs text-${theme.textAlt} sm:text-sm`}>
+                    <p className={`font-semibold text-${theme.accent}`}>
                       Pagamento flexível
                     </p>
                     <p className="mt-1">
@@ -301,8 +475,8 @@
                       imóvel valorizado.
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-slate-700/70 bg-slate-900 p-4 text-xs text-slate-200 sm:text-sm">
-                    <p className="font-semibold text-emerald-300">Transparência total</p>
+                  <div className={`rounded-2xl border border-${theme.border}/70 bg-${theme.bgAlt} p-4 text-xs text-${theme.textAlt} sm:text-sm`}>
+                    <p className={`font-semibold text-${theme.accent}`}>Transparência total</p>
                     <p className="mt-1">
                       Orçamento claro, cronograma definido e taxa % acordada desde o primeiro dia.
                     </p>
@@ -315,20 +489,23 @@
                   number="1"
                   title="Analisamos o seu imóvel e o seu objetivo de venda"
                   description="Fazemos uma visita técnica, avaliamos o potencial de valorização e definimos consigo o preço-alvo de venda."
+                  theme={theme}
                 />
                 <Step
                   number="2"
                   title="A TRATA renova e prepara tudo para o mercado"
                   description="Projeto de arquitetura e interiores, obra completa, acompanhamento técnico e home staging para fotos e visitas."
+                  theme={theme}
                 />
                 <Step
                   number="3"
                   title="Vendemos em parceria e só então você paga"
                   description="Quando a casa é vendida, descontamos o investimento da obra e a % de honorários TRATA previamente acordada."
+                  theme={theme}
                 />
 
-                <div className="mt-4 rounded-2xl border border-dashed border-emerald-500/50 bg-slate-900/70 p-4 text-xs text-slate-300 sm:text-sm">
-                  <p className="font-semibold text-emerald-300">
+                <div className={`mt-4 rounded-2xl border border-dashed border-${theme.accent}/50 bg-${theme.bgAlt}/70 p-4 text-xs text-${theme.textAlt} sm:text-sm`}>
+                  <p className={`font-semibold text-${theme.accent}`}>
                     E se o imóvel não for vendido?
                   </p>
                   <p className="mt-1">
@@ -343,38 +520,39 @@
         );
       }
 
-      function BeforeAfterCard({ item }) {
+      // BeforeAfterCard Component
+      function BeforeAfterCard({ item, theme }) {
         const [view, setView] = useState("after");
 
         return (
-          <article className="flex flex-col overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/80">
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-900">
+          <article className={`flex flex-col overflow-hidden rounded-3xl border border-${theme.border}/80 bg-${theme.bgAlt}/80`}>
+            <div className={`relative aspect-[4/3] w-full overflow-hidden bg-${theme.bgAlt}`}>
               <img
                 src={view === "before" ? item.beforeImg : item.afterImg}
                 alt={`${view === "before" ? "Antes" : "Depois"} - ${item.title}`}
                 className="h-full w-full object-cover transition duration-500"
                 loading="lazy"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40" />
-              <div className="absolute left-3 top-3 flex gap-2 text-[11px] text-slate-100">
-                <span className="rounded-full bg-slate-950/80 px-2 py-1 text-[10px] uppercase tracking-[0.16em]">
+              <div className={`pointer-events-none absolute inset-0 bg-gradient-to-t from-${theme.bg}/80 via-transparent to-${theme.bg}/40`} />
+              <div className={`absolute left-3 top-3 flex gap-2 text-[11px] text-${theme.text}`}>
+                <span className={`rounded-full bg-${theme.bg}/80 px-2 py-1 text-[10px] uppercase tracking-[0.16em]`}>
                   {item.location}
                 </span>
               </div>
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 text-[11px] text-slate-100">
-                <div className="flex items-center gap-2 rounded-full bg-slate-950/80 px-2 py-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <div className={`absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 text-[11px] text-${theme.text}`}>
+                <div className={`flex items-center gap-2 rounded-full bg-${theme.bg}/80 px-2 py-1.5`}>
+                  <span className={`h-1.5 w-1.5 rounded-full bg-${theme.accent}`} />
                   <span className="uppercase tracking-[0.16em]">
                     {view === "before" ? "ANTES" : "DEPOIS"}
                   </span>
                 </div>
-                <div className="flex gap-1 rounded-full bg-slate-950/80 p-1">
+                <div className={`flex gap-1 rounded-full bg-${theme.bg}/80 p-1`}>
                   <button
                     onClick={() => setView("before")}
                     className={`rounded-full px-2 py-1 text-[10px] font-medium transition ${
                       view === "before"
-                        ? "bg-slate-100 text-slate-950"
-                        : "text-slate-300 hover:bg-slate-800"
+                        ? `bg-${theme.text} text-${theme.bg}`
+                        : `text-${theme.textAlt} hover:bg-${theme.bgAlt}`
                     }`}
                   >
                     Antes
@@ -383,8 +561,8 @@
                     onClick={() => setView("after")}
                     className={`rounded-full px-2 py-1 text-[10px] font-medium transition ${
                       view === "after"
-                        ? "bg-emerald-400 text-slate-950"
-                        : "text-slate-300 hover:bg-slate-800"
+                        ? `bg-${theme.accent} text-${theme.bg}`
+                        : `text-${theme.textAlt} hover:bg-${theme.bgAlt}`
                     }`}
                   >
                     Depois
@@ -394,11 +572,11 @@
             </div>
 
             <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
-              <h3 className="text-sm font-semibold text-slate-50 sm:text-base">
+              <h3 className={`text-sm font-semibold text-${theme.text} sm:text-base`}>
                 {item.title}
               </h3>
-              <p className="text-xs text-emerald-300 sm:text-[13px]">{item.tag}</p>
-              <p className="mt-1 text-xs text-slate-300 sm:text-sm">
+              <p className={`text-xs text-${theme.accent} sm:text-[13px]`}>{item.tag}</p>
+              <p className={`mt-1 text-xs text-${theme.textAlt} sm:text-sm`}>
                 Renovação completa com foco em maximizar o valor de venda. Planeamento técnico,
                 materiais escolhidos para o seu perfil de comprador e acompanhamento TRATA do
                 início ao fim.
@@ -408,23 +586,24 @@
         );
       }
 
-      function Galeria() {
+      // Galeria Component
+      function Galeria({ theme }) {
         return (
           <section
             id={sections.galeria}
-            className="bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900"
+            className={`bg-gradient-to-b ${theme.gradient}`}
           >
             <div className="mx-auto max-w-6xl px-4 py-14 lg:px-0">
               <div className="mb-8 flex flex-col gap-4 sm:items-end sm:justify-between sm:gap-0 sm:text-right md:flex-row md:items-center md:text-left">
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                  <h2 className={`text-sm font-semibold uppercase tracking-[0.2em] text-${theme.accent}`}>
                     Antes & Depois
                   </h2>
-                  <p className="text-balance text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+                  <p className={`text-balance text-2xl font-semibold tracking-tight text-${theme.text} sm:text-3xl`}>
                     Transformamos imóveis cansados em oportunidades desejadas.
                   </p>
                 </div>
-                <p className="max-w-md text-xs text-slate-300 sm:text-sm">
+                <p className={`max-w-md text-xs text-${theme.textAlt} sm:text-sm`}>
                   Aqui estão alguns exemplos visuais do tipo de transformação que criamos. As
                   imagens são ilustrativas, mas o impacto é real: mais propostas, melhor preço,
                   venda mais rápida.
@@ -433,7 +612,7 @@
 
               <div className="grid gap-5 md:grid-cols-3">
                 {beforeAfterData.map((item) => (
-                  <BeforeAfterCard key={item.id} item={item} />
+                  <BeforeAfterCard key={item.id} item={item} theme={theme} />
                 ))}
               </div>
             </div>
@@ -441,43 +620,44 @@
         );
       }
 
-      function OfertaMiniCarro() {
+      // OfertaMiniCarro Component
+      function OfertaMiniCarro({ theme }) {
         return (
           <section
             id={sections.oferta}
-            className="border-y border-slate-800/80 bg-slate-950/80"
+            className={`border-y border-${theme.border}/80 bg-${theme.bg}/80`}
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-14 lg:flex-row lg:items-center lg:gap-16 lg:px-0">
               <div className="flex-1 space-y-4">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                <h2 className={`text-sm font-semibold uppercase tracking-[0.2em] text-${theme.accent}`}>
                   Oferta exclusiva
                 </h2>
-                <p className="text-balance text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+                <p className={`text-balance text-2xl font-semibold tracking-tight text-${theme.text} sm:text-3xl`}>
                   Venda a sua casa com a TRATA e ganhe um mini carro.
                 </p>
-                <p className="max-w-xl text-sm text-slate-300 sm:text-base">
+                <p className={`max-w-xl text-sm text-${theme.textAlt} sm:text-base`}>
                   Em campanhas selecionadas, os clientes que vendem o seu imóvel através da TRATA
                   podem receber um mini carro como oferta. Um incentivo real para transformar a
                   sua casa antiga no próximo grande negócio da sua vida.
                 </p>
 
-                <ul className="mt-3 space-y-2 text-xs text-slate-300 sm:text-sm">
+                <ul className={`mt-3 space-y-2 text-xs text-${theme.textAlt} sm:text-sm`}>
                   <li className="flex items-start gap-2">
-                    <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <span className={`mt-[3px] h-1.5 w-1.5 rounded-full bg-${theme.accent}`} />
                     <span>
                       Aplicável a vendas que atinjam o valor mínimo definido em contrato e com
                       renovação feita pela TRATA.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <span className={`mt-[3px] h-1.5 w-1.5 rounded-full bg-${theme.accent}`} />
                     <span>
                       Modelo, cor e condições específicas do mini carro são apresentados antes da
                       assinatura do contrato.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <span className={`mt-[3px] h-1.5 w-1.5 rounded-full bg-${theme.accent}`} />
                     <span>
                       Oferta limitada no tempo e sujeita a stock e aprovação interna da TRATA.
                     </span>
@@ -486,7 +666,7 @@
 
                 <button
                   onClick={() => scrollToSection(sections.contacto)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition hover:bg-emerald-300"
+                  className={`mt-4 inline-flex items-center gap-2 rounded-full bg-${theme.accent} px-6 py-2.5 text-sm font-semibold text-${theme.bg} shadow-lg shadow-${theme.accent}/40 transition hover:bg-${theme.accentDark}`}
                 >
                   Quero saber se o meu imóvel é elegível
                   <span className="text-base">→</span>
@@ -494,29 +674,29 @@
               </div>
 
               <div className="flex-1">
-                <div className="relative mx-auto max-w-md rounded-3xl border border-emerald-500/40 bg-gradient-to-br from-slate-950 via-emerald-950/40 to-slate-900 p-5">
-                  <div className="pointer-events-none absolute -left-6 -top-6 h-20 w-20 rounded-full bg-emerald-400/40 blur-3xl" />
-                  <div className="pointer-events-none absolute -right-3 -bottom-8 h-24 w-24 rounded-full bg-cyan-400/30 blur-3xl" />
+                <div className={`relative mx-auto max-w-md rounded-3xl border border-${theme.accent}/40 bg-gradient-to-br from-${theme.bg} via-${theme.bgAlt} to-${theme.bg} p-5`}>
+                  <div className={`pointer-events-none absolute -left-6 -top-6 h-20 w-20 rounded-full bg-${theme.accent}/40 blur-3xl`} />
+                  <div className={`pointer-events-none absolute -right-3 -bottom-8 h-24 w-24 rounded-full bg-${theme.accentDark}/30 blur-3xl`} />
 
                   <div className="relative flex flex-col gap-4">
-                    <div className="inline-flex items-center gap-2 self-start rounded-full bg-slate-950/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                    <div className={`inline-flex items-center gap-2 self-start rounded-full bg-${theme.bg}/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-${theme.accent}`}>
                       Bónus TRATA
                     </div>
 
-                    <p className="text-sm font-semibold text-slate-50 sm:text-base">
+                    <p className={`text-sm font-semibold text-${theme.text} sm:text-base`}>
                       Mais do que vender uma casa, queremos marcar um novo começo.
                     </p>
-                    <p className="text-xs text-slate-300 sm:text-sm">
+                    <p className={`text-xs text-${theme.textAlt} sm:text-sm`}>
                       O mini carro é o símbolo dessa mudança: mobilidade para a sua nova fase, sem
                       custo adicional. Falamos consigo sobre elegibilidade logo na primeira
                       reunião.
                     </p>
 
-                    <div className="relative mt-3 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/90 p-4">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-cyan-500/10" />
+                    <div className={`relative mt-3 overflow-hidden rounded-2xl border border-${theme.border}/80 bg-${theme.bgAlt}/90 p-4`}>
+                      <div className={`absolute inset-0 bg-gradient-to-r from-${theme.accent}/10 via-transparent to-${theme.accentDark}/10`} />
                       <div className="relative flex items-center justify-between gap-4">
-                        <div className="space-y-1 text-xs text-slate-200 sm:text-sm">
-                          <p className="font-semibold text-emerald-300">
+                        <div className={`space-y-1 text-xs text-${theme.textAlt} sm:text-sm`}>
+                          <p className={`font-semibold text-${theme.accent}`}>
                             Exemplo de campanha
                           </p>
                           <p>
@@ -524,7 +704,7 @@
                             TRATA podem ser elegíveis para a oferta do mini carro.
                           </p>
                         </div>
-                        <div className="hidden w-24 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-400 text-center text-[11px] font-semibold text-slate-950 shadow-lg shadow-emerald-500/50 sm:flex">
+                        <div className={`hidden w-24 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-${theme.accent} via-${theme.accentDark} to-${theme.accent} text-center text-[11px] font-semibold text-${theme.bg} shadow-lg shadow-${theme.accent}/50 sm:flex`}>
                           MINI
                           <br />
                           CARRO
@@ -539,30 +719,31 @@
         );
       }
 
-      function Contacto() {
+      // Contacto Component
+      function Contacto({ theme }) {
         return (
           <section
             id={sections.contacto}
-            className="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950"
+            className={`bg-gradient-to-b ${theme.gradient}`}
           >
             <div className="mx-auto max-w-6xl px-4 py-14 lg:px-0">
-              <div className="mx-auto max-w-3xl rounded-3xl border border-slate-800/80 bg-slate-950/80 p-5 sm:p-8">
+              <div className={`mx-auto max-w-3xl rounded-3xl border border-${theme.border}/80 bg-${theme.bg}/80 p-5 sm:p-8`}>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                   <div className="space-y-3">
-                    <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                    <h2 className={`text-sm font-semibold uppercase tracking-[0.2em] text-${theme.accent}`}>
                       Fale com a TRATA
                     </h2>
-                    <p className="text-balance text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+                    <p className={`text-balance text-2xl font-semibold tracking-tight text-${theme.text} sm:text-3xl`}>
                       Envie os dados do seu imóvel e receba um estudo de valorização.
                     </p>
-                    <p className="max-w-xl text-sm text-slate-300">
+                    <p className={`max-w-xl text-sm text-${theme.textAlt}`}>
                       Conte-nos em que cidade está o imóvel, o estado atual e o seu objetivo de
                       venda. Respondemos com uma proposta preliminar e, se fizer sentido para si,
                       avançamos para visita técnica.
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-slate-200 sm:text-sm">
-                    <p className="font-semibold text-emerald-300">Sem compromisso</p>
+                  <div className={`rounded-2xl border border-${theme.accent}/30 bg-${theme.accent}/10 p-4 text-xs text-${theme.textAlt} sm:text-sm`}>
+                    <p className={`font-semibold text-${theme.accent}`}>Sem compromisso</p>
                     <p className="mt-1">
                       O primeiro estudo é gratuito e não implica qualquer obrigação de avançar com a
                       obra.
@@ -572,43 +753,43 @@
 
                 <form className="mt-6 grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="block text-xs font-medium text-slate-200">
+                    <label className={`block text-xs font-medium text-${theme.text}`}>
                       Nome
                     </label>
                     <input
                       type="text"
                       placeholder="Como prefere ser tratado(a)?"
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-emerald-500/50 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
+                      className={`w-full rounded-xl border border-${theme.border} bg-${theme.bgAlt}/80 px-3 py-2 text-sm text-${theme.text} outline-none ring-${theme.accent}/50 placeholder:text-${theme.textAlt} focus:border-${theme.accent} focus:ring-2`}
                     />
                   </div>
 
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="block text-xs font-medium text-slate-200">
+                    <label className={`block text-xs font-medium text-${theme.text}`}>
                       Email
                     </label>
                     <input
                       type="email"
                       placeholder="seunome@exemplo.pt"
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-emerald-500/50 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
+                      className={`w-full rounded-xl border border-${theme.border} bg-${theme.bgAlt}/80 px-3 py-2 text-sm text-${theme.text} outline-none ring-${theme.accent}/50 placeholder:text-${theme.textAlt} focus:border-${theme.accent} focus:ring-2`}
                     />
                   </div>
 
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="block text-xs font-medium text-slate-200">
+                    <label className={`block text-xs font-medium text-${theme.text}`}>
                       Localização do imóvel
                     </label>
                     <input
                       type="text"
                       placeholder="Cidade / zona (ex.: Porto, Boavista)"
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-emerald-500/50 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
+                      className={`w-full rounded-xl border border-${theme.border} bg-${theme.bgAlt}/80 px-3 py-2 text-sm text-${theme.text} outline-none ring-${theme.accent}/50 placeholder:text-${theme.textAlt} focus:border-${theme.accent} focus:ring-2`}
                     />
                   </div>
 
                   <div className="space-y-1 sm:col-span-1">
-                    <label className="block text-xs font-medium text-slate-200">
+                    <label className={`block text-xs font-medium text-${theme.text}`}>
                       Tipo de imóvel
                     </label>
-                    <select className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-emerald-500/50 focus:border-emerald-400 focus:ring-2">
+                    <select className={`w-full rounded-xl border border-${theme.border} bg-${theme.bgAlt}/80 px-3 py-2 text-sm text-${theme.text} outline-none ring-${theme.accent}/50 focus:border-${theme.accent} focus:ring-2`}>
                       <option>Apartamento</option>
                       <option>Moradia</option>
                       <option>Prédio completo</option>
@@ -617,26 +798,26 @@
                   </div>
 
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="block text-xs font-medium text-slate-200">
+                    <label className={`block text-xs font-medium text-${theme.text}`}>
                       Conte-nos um pouco sobre o estado atual do imóvel
                     </label>
                     <textarea
                       rows="4"
                       placeholder="Ano aproximado de construção, principais problemas, se já está habitado ou vazio, etc."
-                      className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 outline-none ring-emerald-500/50 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
+                      className={`w-full rounded-xl border border-${theme.border} bg-${theme.bgAlt}/80 px-3 py-2 text-sm text-${theme.text} outline-none ring-${theme.accent}/50 placeholder:text-${theme.textAlt} focus:border-${theme.accent} focus:ring-2`}
                     ></textarea>
                   </div>
 
                   <div className="flex flex-col gap-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                      <input type="checkbox" className="h-3.5 w-3.5 rounded border-slate-700 bg-slate-900" />
+                    <div className={`flex items-center gap-2 text-[11px] text-${theme.textAlt}`}>
+                      <input type="checkbox" className={`h-3.5 w-3.5 rounded border-${theme.border} bg-${theme.bgAlt}`} />
                       <span>
                         Aceito ser contactado(a) pela TRATA para falar sobre o meu imóvel.
                       </span>
                     </div>
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-400 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 transition hover:bg-emerald-300"
+                      className={`inline-flex items-center justify-center gap-2 rounded-full bg-${theme.accent} px-6 py-2.5 text-sm font-semibold text-${theme.bg} shadow-lg shadow-${theme.accent}/40 transition hover:bg-${theme.accentDark}`}
                     >
                       Enviar pedido de contacto
                       <span className="text-base">→</span>
@@ -649,25 +830,26 @@
         );
       }
 
-      function Footer() {
+      // Footer Component
+      function Footer({ theme }) {
         return (
-          <footer className="border-t border-slate-800/80 bg-slate-950">
-            <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-[11px] text-slate-500 sm:flex-row sm:items-center sm:justify-between lg:px-0">
+          <footer className={`border-t border-${theme.border}/80 bg-${theme.bg}`}>
+            <div className={`mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-[11px] text-${theme.textAlt} sm:flex-row sm:items-center sm:justify-between lg:px-0`}>
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-xs font-bold text-slate-950">
+                <span className={`inline-flex h-7 w-7 items-center justify-center rounded-lg bg-${theme.accent} text-xs font-bold text-${theme.bg}`}>
                   T
                 </span>
                 <div>
-                  <p className="font-semibold tracking-[0.22em] text-emerald-300">
+                  <p className={`font-semibold tracking-[0.22em] text-${theme.accent}`}>
                     TRATA
                   </p>
-                  <p className="text-[10px] text-slate-500">Trata, tratamos de tudo.</p>
+                  <p className={`text-[10px] text-${theme.textAlt}`}>Trata, tratamos de tudo.</p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-[10px] text-slate-500">
+              <div className={`flex flex-wrap items-center gap-3 text-[10px] text-${theme.textAlt}`}>
                 <span>© {new Date().getFullYear()} TRATA · Todos os direitos reservados.</span>
-                <span className="hidden h-1 w-1 rounded-full bg-slate-600 sm:inline-block" />
+                <span className={`hidden h-1 w-1 rounded-full bg-${theme.border} sm:inline-block`} />
                 <span>Website demonstrativo. Conteúdos e imagens meramente ilustrativos.</span>
               </div>
             </div>
@@ -675,22 +857,78 @@
         );
       }
 
+      // ============================================
+      // MAIN APP (from app.js)
+      // ============================================
+      
+      // Main App Component
       function App() {
+        const [currentTheme, setCurrentTheme] = useState('modern');
+        const theme = themes[currentTheme];
+
         return (
-          <div className="min-h-screen bg-slate-950 text-slate-50">
-            <Navbar />
+          <div className={`min-h-screen bg-${theme.bg} text-${theme.text}`} style={{
+            backgroundColor: `var(--bg-${currentTheme})`,
+            color: `var(--text-${currentTheme})`
+          }}>
+            <style>{`
+              :root {
+                --bg-modern: rgb(2 6 23);
+                --text-modern: rgb(248 250 252);
+                --accent-modern: rgb(52 211 153);
+                
+                --bg-classic: rgb(28 25 23);
+                --text-classic: rgb(255 251 235);
+                --accent-classic: rgb(245 158 11);
+                
+                --bg-cyberpunk: rgb(0 0 0);
+                --text-cyberpunk: rgb(236 254 255);
+                --accent-cyberpunk: rgb(217 70 239);
+                
+                --bg-cozy: rgb(69 10 10);
+                --text-cozy: rgb(255 247 237);
+                --accent-cozy: rgb(251 113 133);
+                
+                --bg-lavish: rgb(59 7 100);
+                --text-lavish: rgb(250 245 255);
+                --accent-lavish: rgb(250 204 21);
+                
+                --bg-urban: rgb(9 9 11);
+                --text-urban: rgb(250 250 250);
+                --accent-urban: rgb(96 165 250);
+                
+                --bg-professional: rgb(15 23 42);
+                --text-professional: rgb(248 250 252);
+                --accent-professional: rgb(14 165 233);
+                
+                --bg-forest: rgb(5 46 22);
+                --text-forest: rgb(240 253 244);
+                --accent-forest: rgb(163 230 53);
+                
+                --bg-sunset: rgb(80 7 36);
+                --text-sunset: rgb(253 242 248);
+                --accent-sunset: rgb(251 146 60);
+                
+                --bg-midnight: rgb(23 37 84);
+                --text-midnight: rgb(239 246 255);
+                --accent-midnight: rgb(34 211 238);
+              }
+            `}</style>
+            <Navbar theme={theme} />
             <main>
-              <Hero />
-              <ComoFunciona />
-              <Galeria />
-              <OfertaMiniCarro />
-              <Contacto />
+              <Hero theme={theme} />
+              <ComoFunciona theme={theme} />
+              <Galeria theme={theme} />
+              <OfertaMiniCarro theme={theme} />
+              <Contacto theme={theme} />
             </main>
-            <Footer />
+            <Footer theme={theme} />
+            <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
           </div>
         );
       }
 
+      // Initialize React App
       const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<App />);
     </script>
