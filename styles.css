@@ -1,0 +1,9 @@
+/* Smooth scroll for in-page navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Simple video container styling fallback */
+.video-shadow {
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.7);
+}
